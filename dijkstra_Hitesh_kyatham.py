@@ -11,6 +11,10 @@ class Graph:
         if(self.check_Obstacle(start_index) or self.check_Obstacle(goal_index)):
           raise Exception("Start or Goal indices are in Obstacle space.")
         self.graph = {tuple(start_index): [-1,-1]}
+        fps = 30
+        frame_shape = cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE).shape
+        print(frame_shape)
+        self.out = cv2.VideoWriter('hkyatham_661.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_shape[1], frame_shape[0]))
         # self.obstacle_indices
       
     def map_Generator(self):
@@ -155,7 +159,7 @@ class Graph:
         else:
             return self.UpLeft(index, cost)
 
-    def Dijstra(self, start_index, goal_index,out):
+    def Dijstra(self, start_index, goal_index):
 
       queue = []
       d = [0 , start_index]
@@ -192,19 +196,25 @@ class Graph:
         hq.heapify(queue)
         # cv2.imshow("",cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         # cv2.waitKey(0)
-        out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+        self.out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+    
+    def backTracking(self, goal_index):
+        i = goal_index
+        while (i != [-1,-1]):
+            self.map[i[0]][i[1]] = [255, 255, 255]
+            i = self.graph[tuple(i)]
+        self.out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+            
 
 
 if __name__ == '__main__':
     start_index = [10,10]
-    goal_index = [1150,50]
-    g = Graph(start_index,goal_index)  
-    fps = 60
-    width = 1200
-    height = 500
-    out = cv2.VideoWriter('hkyatham_661.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (width, height))
-    g.Dijstra(start_index,goal_index,out)
-    cv2.imshow("Shortest_Path",g.map)
+    goal_index = [200,50]
+    g = Graph(start_index,goal_index)
+    g.Dijstra(start_index,goal_index)
+    g.backTracking(goal_index)
+    g.out.release()
+    cv2.imshow("Shortest_Path",cv2.rotate(g.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+    cv2.waitKey(0)
     # Create VideoWriter object for output video
-    out.release()
     cv2.destroyAllWindows()

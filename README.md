@@ -6,6 +6,7 @@ This code is written specific to the above map. The dimentions of the map are sh
 ![Image of the Map](https://github.com/HKyatham/Pixel_Puzzle_Using_Dijstra/blob/main/Generated%20Images/Map_of_Environment_with_Dimensions.png)
 
 To run the code download the [dijkstra python file](https://github.com/HKyatham/Pixel_Puzzle_Using_Dijstra/blob/main/dijkstra_Hitesh_kyatham.py) and run it using the command
+
 ```python dijkstra_Hitesh_kyatham.py```
 
 Once the code starts running it will ask for start index x value followed by start index y value, similarly for goal index x and y values. 

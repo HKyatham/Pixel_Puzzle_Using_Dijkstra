@@ -202,7 +202,7 @@ class Graph:
     def backTracking(self, goal_index):
         i = goal_index
         while (i != [-1,-1]):
-            self.map[i[0]][i[1]] = [255, 0, 0]
+            self.map[i[0]][i[1]] = [0, 0, 255]
             i = self.graph[tuple(i)]
         self.out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
             

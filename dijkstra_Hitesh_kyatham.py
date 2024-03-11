@@ -4,17 +4,17 @@ import cv2
 
 class Graph:
     def __init__(self, start_index, goal_index):
-        self.map = np.zeros((1200,500,3))
+        self.map = np.zeros((1200,500,3), dtype= np.uint8)
         self.map_Generator()
         cv2.imshow("",cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         cv2.waitKey(0)
         if(self.check_Obstacle(start_index) or self.check_Obstacle(goal_index)):
           raise Exception("Start or Goal indices are in Obstacle space.")
         self.graph = {tuple(start_index): [-1,-1]}
-        fps = 30
+        fps = 60
         frame_shape = cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE).shape
         print(frame_shape)
-        self.out = cv2.VideoWriter('hkyatham_661.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_shape[1], frame_shape[0]))
+        self.out = cv2.VideoWriter('hkyatham_661.avi', cv2.VideoWriter_fourcc(*'XVID'), fps, (frame_shape[1], frame_shape[0]))
         # self.obstacle_indices
       
     def map_Generator(self):
@@ -162,6 +162,7 @@ class Graph:
     def Dijstra(self, start_index, goal_index):
 
       queue = []
+      costNode = {tuple(start_index):0}
       d = [0 , start_index]
     #   print("Executed till here: 1")
       #print([index,0,initial_state])
@@ -185,6 +186,7 @@ class Graph:
             #print(new_state,i)
             if not self.node_exists(d[1]):
                 self.graph[tuple(d[1])] = index
+                costNode[tuple(d[1])] = d[0]
                 if(d not in queue):
                     hq.heappush(queue, d)
             else:
@@ -209,12 +211,16 @@ class Graph:
 
 if __name__ == '__main__':
     start_index = [10,10]
-    goal_index = [200,50]
-    g = Graph(start_index,goal_index)
-    g.Dijstra(start_index,goal_index)
-    g.backTracking(goal_index)
-    g.out.release()
-    cv2.imshow("Shortest_Path",cv2.rotate(g.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
-    cv2.waitKey(0)
-    # Create VideoWriter object for output video
-    cv2.destroyAllWindows()
+    goal_index = [1150,50]
+    try:
+        g = Graph(start_index,goal_index)
+        g.Dijstra(start_index,goal_index)
+        g.backTracking(goal_index)
+        g.out.release()
+        cv2.imshow("Shortest_Path", cv2.rotate(g.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+        cv2.waitKey(0)
+        # Create VideoWriter object for output video
+        cv2.destroyAllWindows()
+    except Exception as error:
+        print('Caught this error: ' + repr(error))
+        

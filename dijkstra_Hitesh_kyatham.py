@@ -11,10 +11,10 @@ class Graph:
         if(self.check_Obstacle(start_index) or self.check_Obstacle(goal_index)):
           raise Exception("Start or Goal indices are in Obstacle space.")
         self.graph = {tuple(start_index): [-1,-1]}
-        fps = 60
+        fps = 300
         frame_shape = cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE).shape
         print(frame_shape)
-        self.out = cv2.VideoWriter('hkyatham_661.avi', cv2.VideoWriter_fourcc(*'XVID'), fps, (frame_shape[1], frame_shape[0]))
+        self.out = cv2.VideoWriter('hkyatham_661.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_shape[1], frame_shape[0]))
         # self.obstacle_indices
       
     def map_Generator(self):
@@ -72,7 +72,7 @@ class Graph:
         return (cost, current_position)
       else:
         # print("Inside up else")
-        return (cost+1,new_position)
+        return (round(cost+1, 1),new_position)
     
     def UpRight(self, current_position, cost):
       new_position = current_position.copy()
@@ -82,7 +82,7 @@ class Graph:
       if(self.check_Obstacle(new_position)):
         return (cost, current_position)
       else:
-        return (cost+1.4,new_position)
+        return (round(cost+1.4, 1),new_position)
     
     def Right(self, current_position, cost):
       new_position = current_position.copy()
@@ -91,7 +91,7 @@ class Graph:
       if(self.check_Obstacle(new_position)):
         return (cost, current_position)
       else:
-        return (cost+1,new_position)
+        return (round(cost+1, 1),new_position)
 
     def DownRight(self, current_position, cost):
       new_position = current_position.copy()
@@ -100,7 +100,7 @@ class Graph:
       if(self.check_Obstacle(new_position)):
         return (cost, current_position)
       else:
-        return (cost+1.4,new_position)
+        return (round(cost+1.4, 1),new_position)
 
     def Down(self, current_position, cost):
       new_position = current_position.copy()
@@ -109,7 +109,7 @@ class Graph:
       if(self.check_Obstacle(new_position)):
         return (cost, current_position)
       else:
-        return (cost+1,new_position)
+        return (round(cost+1, 1),new_position)
 
     def DownLeft(self, current_position, cost):
       new_position = current_position.copy()
@@ -118,7 +118,7 @@ class Graph:
       if(self.check_Obstacle(new_position)):
         return (cost, current_position)
       else:
-        return (cost+1.4,new_position)
+        return (round(cost+1.4, 1),new_position)
 
     def Left(self, current_position, cost):
       new_position = current_position.copy()
@@ -127,7 +127,7 @@ class Graph:
       if(self.check_Obstacle(new_position)):
         return (cost, current_position)
       else:
-        return (cost+1,new_position)
+        return (round(cost+1, 1),new_position)
 
     def UpLeft(self, current_position, cost):
       new_position = current_position.copy()
@@ -136,7 +136,7 @@ class Graph:
       if(self.check_Obstacle(new_position)):
         return (cost, current_position)
       else:
-        return (cost+1.4,new_position)
+        return (round(cost+1.4, 1),new_position)
 
     def node_exists(self, index):
         return tuple(index) in self.graph
@@ -172,7 +172,7 @@ class Graph:
       hq.heappush(queue, d)
 
       while len(queue):
-
+        # print(queue)
         cost, index = hq.heappop(queue)
         self.map[index[0]][index[1]] = [0,255,0]
         if(index == goal_index):
@@ -186,15 +186,14 @@ class Graph:
             #print(new_state,i)
             if not self.node_exists(d[1]):
                 self.graph[tuple(d[1])] = index
-                costNode[tuple(d[1])] = d[0]
+                costNode[tuple(d[1])] = round(d[0], 1)
+                #print(round(d[0], 1))
                 if(d not in queue):
                     hq.heappush(queue, d)
             else:
-                for i in queue:
-                    if(i[1]==d[1]):
-                        if(i[0]>d[0]):
-                            queue[queue.index(i)] = d
-                            self.graph[tuple(i[1])] = index
+                if(d[0] < costNode[tuple(d[1])]):
+                    queue[queue.index([costNode[tuple(d[1])],d[1]])] = d
+                    self.graph[tuple(d[1])] = index
         hq.heapify(queue)
         # cv2.imshow("",cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         # cv2.waitKey(0)
@@ -203,15 +202,19 @@ class Graph:
     def backTracking(self, goal_index):
         i = goal_index
         while (i != [-1,-1]):
-            self.map[i[0]][i[1]] = [255, 255, 255]
+            self.map[i[0]][i[1]] = [255, 0, 0]
             i = self.graph[tuple(i)]
         self.out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
             
 
 
 if __name__ == '__main__':
-    start_index = [10,10]
-    goal_index = [1150,50]
+    x1 = int(input("Enter x value of start node: "))
+    y1 = int(input("Enter y value of start node: "))
+    x2 = int(input("Enter x value of goal node: "))
+    y2 = int(input("Enter y value of goal node: "))
+    start_index = [x1, y1]
+    goal_index = [x2, y2]
     try:
         g = Graph(start_index,goal_index)
         g.Dijstra(start_index,goal_index)

@@ -6,10 +6,12 @@ class Graph:
     def __init__(self, start_index, goal_index):
         self.map = np.zeros((1200,500,3), dtype= np.uint8)
         self.map_Generator()
+        if(self.check_Obstacle(start_index) or self.check_Obstacle(goal_index) or
+           start_index[0] < 0 or start_index[1] < 0 or goal_index[0] < 0 or goal_index[1] < 0 or
+           start_index[0] > 1199 or start_index[1] > 499 or goal_index[0] > 1199 or goal_index[1] > 499):
+          raise Exception("Start or Goal indices are in Obstacle space.")
         cv2.imshow("",cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         cv2.waitKey(0)
-        if(self.check_Obstacle(start_index) or self.check_Obstacle(goal_index)):
-          raise Exception("Start or Goal indices are in Obstacle space.")
         self.graph = {tuple(start_index): [-1,-1]}
         fps = 300
         frame_shape = cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE).shape

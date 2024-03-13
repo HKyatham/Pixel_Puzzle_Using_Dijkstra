@@ -208,7 +208,7 @@ class Graph:
         for index in self.graph:
            self.map[index[0]][index[1]] = [0,255,0]
            c +=1
-           if(c%5==0):
+           if(c%100==0):
             out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         i = goal_index
         while (i != [-1,-1]):

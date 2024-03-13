@@ -1,6 +1,7 @@
 import heapq as hq
 import numpy as np
 import cv2
+import time
 
 class Graph:
     def __init__(self, start_index, goal_index):
@@ -13,10 +14,6 @@ class Graph:
         cv2.imshow("",cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         cv2.waitKey(0)
         self.graph = {tuple(start_index): [-1,-1]}
-        fps = 300
-        frame_shape = cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE).shape
-        print(frame_shape)
-        self.out = cv2.VideoWriter('hkyatham_661.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_shape[1], frame_shape[0]))
         # self.obstacle_indices
       
     def map_Generator(self):
@@ -176,7 +173,7 @@ class Graph:
       while len(queue):
         # print(queue)
         cost, index = hq.heappop(queue)
-        self.map[index[0]][index[1]] = [0,255,0]
+        # self.map[index[0]][index[1]] = [0,255,0]
         if(index == goal_index):
             return 0
 
@@ -199,14 +196,27 @@ class Graph:
         hq.heapify(queue)
         # cv2.imshow("",cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         # cv2.waitKey(0)
-        self.out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+        # self.out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+        
     
-    def backTracking(self, goal_index):
+    def videoProcessor(self):
+        fps = 60
+        frame_shape = cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE).shape
+        print(frame_shape)
+        c = 0
+        out = cv2.VideoWriter('hkyatham_661.mp4', cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_shape[1], frame_shape[0]))
+        for index in self.graph:
+           self.map[index[0]][index[1]] = [0,255,0]
+           c +=1
+           if(c%5==0):
+            out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         i = goal_index
         while (i != [-1,-1]):
-            self.map[i[0]][i[1]] = [0, 0, 255]
+            self.map[i[0]][i[1]] = [0, 165, 255]
             i = self.graph[tuple(i)]
-        self.out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+        out.write(cv2.rotate(self.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
+        out.release()
+           
             
 
 
@@ -218,14 +228,18 @@ if __name__ == '__main__':
     start_index = [x1, y1]
     goal_index = [x2, y2]
     try:
+        start_time = time.time()
         g = Graph(start_index,goal_index)
         g.Dijstra(start_index,goal_index)
-        g.backTracking(goal_index)
-        g.out.release()
+        # g.backTracking(goal_index)
+        # print("--- %s seconds ---" % (time.time() - start_time))
+        g.videoProcessor()
+        # g.out.release()
         cv2.imshow("Shortest_Path", cv2.rotate(g.map, cv2.ROTATE_90_COUNTERCLOCKWISE))
         cv2.waitKey(0)
         # Create VideoWriter object for output video
         cv2.destroyAllWindows()
+        print("--- %s seconds ---" % (time.time() - start_time))# 433 sec whivh is 7.2 min so on avg 7~8 min execution time.
     except Exception as error:
         print('Caught this error: ' + repr(error))
         
